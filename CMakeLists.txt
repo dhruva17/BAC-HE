@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.10)
+project(BAC VERSION 1.0)
+add_executable(main main.cpp BGV/bgv.cpp BGV/bgv.h BGV/matrixfull.cpp BGV/matrixfull.h pyhelper.hpp) 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+set(CMAKE_CXX_FLAGS "-g")
+
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+target_link_libraries(main ${PYTHON_LIBRARIES})
+
+find_package(SEAL 4.0 REQUIRED)
+target_link_libraries(main -ggdb -lm -lgmp -lntl -lpthread)
+
+if(TARGET SEAL::seal)
+    target_link_libraries(main SEAL::seal)
+elseif(TARGET SEAL::seal_shared)
+    target_link_libraries(main SEAL::seal_shared)
+else()
+    message(FATAL_ERROR "Cannot find target SEAL::seal or SEAL::seal_shared")
+endif()
